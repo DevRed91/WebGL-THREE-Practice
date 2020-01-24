@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Walls with interactive Cube</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+        <script type="text/javascript" src="https://threejs.org/build/three.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/loaders/VRMLLoader.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/controls/TransformControls.js"></script>
+
+        <style>
+
+            body {
+                color: #fff;
+                font-family: 'Raleway', sans-serif;
+                font-weight: bold;
+                height:100%;
+                width:100%;
+                background-color: black;
+                margin:0;
+                overflow:hidden;
+
+            }
+
+            #container{
+                background-color: #5D6D7E;
+            }
+
+            .content {
+                position: absolute;
+                background-color: #424949;
+                margin:10px;
+                padding:20px;
+                top:40%;
+                left:25px;
+            }
+            #material1{
+                text-transform: uppercase;
+                font-family: 'Raleway';
+                font-weight:400;
+                font-size:medium;
+                margin:20px;
+            }
+
+            #material2{
+                text-transform: uppercase;
+                font-family: 'Raleway';
+                font-weight:400;
+                font-size:medium;
+                margin:20px;
+            }
+
+            #material3{
+                text-transform: uppercase;
+                font-family: 'Raleway';
+                font-weight:400;
+                font-size:medium;
+                margin:20px;
+
+            }
+
+            #material1:hover{
+                background-color: #9dc2c2;
+                color:black;
+                padding:20px;
+                cursor:pointer;
+                font-size:large;
+                font-weight:800;
+                transition: 0.5s;
+            }
+
+            #material2:hover{
+                background-color: #9dc2c2;
+                color:black;
+                padding:20px;
+                cursor:pointer;
+                font-size:large;
+                font-weight:800;
+                transition: 0.5s;
+            }
+
+            #material3:hover{
+                background-color: #9dc2c2;
+                color:black;
+                padding:20px;
+                cursor:pointer;
+                font-size:large;
+                font-weight:800;
+                transition: 0.5s;
+            }
+
+
+        </style>
+    </head>
+
+    <body>
+        <div id = "container">
+            <section class = "content">
+                <h2 id = "material1">Material 1</h2>
+                <h2 id = "material2" onclick = "material2()">Material 2</h2>
+                <h2 id = "material3" onclick = "material3()">Material 3</h2>
+            </section>
+        </div>
+
+        <script>
+            var renderer, scene, camera, composer, planet3D, shell3Dt, particle;
+
+            init();
+            render();
+
+            function init() {
+                //renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                renderer.setClearColor(0x000000, 0.0);
+                var container = document.getElementById("container");
+                    container.appendChild(renderer.domElement);
+
+                //DOM
+                var content = document.getElementById("content");
+                var mat1 = document.getElementById("material1");
+                var mat2 = document.getElementById("material2");
+                var mat3 = document.getElementById("material3");
+
+
+
+                scene = new THREE.Scene();
+
+                var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+                scene.add( light );
+
+                //camera
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100000);
+                camera.position.set(-4000,10000,15000);
+
+                // Create material
+                var material1 = new THREE.MeshBasicMaterial({
+                    color: 0xd3d3d3,
+                    side: THREE.DoubleSide
+                });
+
+                var material2 = new THREE.MeshBasicMaterial({
+                    color: 0x545454,
+                    side: THREE.DoubleSide
+                });
+
+                var material3 = new THREE.MeshBasicMaterial({
+                    color: 0xd3d3d3,
+                    side: THREE.DoubleSide
+                });
+
+                var material4 = new THREE.MeshBasicMaterial({
+                    color: 0x545454,
+                    side: THREE.DoubleSide
+                });
+
+                var material5 = new THREE.MeshBasicMaterial({
+                    color: 0xd3d3d3,
+                    side: THREE.DoubleSide
+                });
+
+                var material6 = new THREE.MeshBasicMaterial({
+                    color: 0x545454,
+                    side: THREE.DoubleSide
+                });
+
+                var material7 = new THREE.MeshBasicMaterial({
+                    color: 0xd3d3d3,
+                    side: THREE.DoubleSide
+                });
+
+                var material8 = new THREE.MeshBasicMaterial({
+                    color: 0x545454,
+                    side: THREE.DoubleSide
+                });
+
+                var floorMat = new THREE.MeshBasicMaterial({
+                    color: 0xd3d3d3,
+                    side: THREE.DoubleSide
+                });
+
+                // Creating wall 1
+                var geometry1 = new THREE.PlaneGeometry(2145, 3000, 0);
+                wallA = new THREE.Mesh(geometry1, material1);
+                wallA.position.set(0,0,0);
+                scene.add(wallA);
+
+                // Creating wall 2
+                var geometry2 = new THREE.PlaneGeometry(3040, 3000, 0);
+                wallG = new THREE.Mesh(geometry2, material2);
+                wallG.position.set(-1072,0,1500);
+                wallG.rotation.y = Math.PI / 2;
+                scene.add(wallG);
+
+                // Creating wall 3
+                var geometry3 = new THREE.PlaneGeometry(2344, 3000, 0);
+                wallH = new THREE.Mesh(geometry3, material3);
+                wallH.position.set(-2244,0,3000);
+                scene.add(wallH);
+
+                //creating wall 4
+                var geometry4 = new THREE.PlaneGeometry(3040, 3000, 0);
+                wallC = new THREE.Mesh(geometry4, material4);
+                wallC.position.set(-3416.5,0,1500);
+                wallC.rotation.y = Math.PI / 2;
+                scene.add(wallC);
+
+                // Creating wall 5
+                var geometry5 = new THREE.PlaneGeometry(2145, 3000, 0);
+                wallB = new THREE.Mesh(geometry5, material5);
+                wallB.position.set(-4489,0,0);
+                scene.add(wallB);
+
+                // Creating wall 6
+                var geometry6 = new THREE.PlaneGeometry(5980, 3000, 0);
+                wallD = new THREE.Mesh(geometry6, material6);
+                wallD.position.set(-5561,0,2990);
+                wallD.rotation.y = Math.PI/2;
+                scene.add(wallD);
+
+                // Creating wall 7
+                var geometry7 = new THREE.PlaneGeometry(6634, 3000, 0);
+                wallE = new THREE.Mesh(geometry7, material7);
+                wallE.position.set(-2244,0,5980);
+                scene.add(wallE);
+
+                // Creating wall 8
+                var geometry8 = new THREE.PlaneGeometry(5980, 3000, 0);
+                wallF = new THREE.Mesh(geometry8, material8);
+                wallF.position.set(1072,0,2990);
+                wallF.rotation.y = Math.PI/2;
+                scene.add(wallF);
+
+                //orbit controls
+                var orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
+                    orbitControl.update();
+
+                // Add listener for window resize.
+                window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener('click', onDocumentMouseDown, false);
+
+                //creating cube
+                var cubeGeometry = new THREE.BoxBufferGeometry(800, 800, 800);
+                //cube materials
+                var cubeMaterial1 =new THREE.MeshPhongMaterial( {
+                                    color: 0xff0000,
+                                    specular: 0x009900,
+                                    shininess: 30,
+                                    shading: THREE.FlatShading
+                                });
+
+                var cubeMaterial2 =new THREE.MeshPhongMaterial( {
+                                    color: 0xffff00,
+                                    specular: 0x009900,
+                                    shininess: 30,
+                                    shading: THREE.FlatShading
+                                });
+
+                var cubeMaterial3 =new THREE.MeshPhongMaterial( {
+                                    color: 0x0000ff,
+                                    specular: 0x009900,
+                                    shininess: 30,
+                                    shading: THREE.FlatShading
+                                });
+
+
+
+                //creating cube
+                var cube = new THREE.Mesh(cubeGeometry,cubeMaterial3);
+                cube.position.set(0,0,1500);
+                scene.add(cube);
+
+                //changing color functions
+                mat1.onclick = function material1(){
+                    cube.material = cubeMaterial1;
+                }
+
+                mat2.onclick = function material1(){
+                    cube.material = cubeMaterial2;
+                }
+
+                mat3.onclick = function material1(){
+                    cube.material = cubeMaterial3;
+                }
+
+
+                //adding interactivity
+                var raycaster = new THREE.Raycaster();
+                var mouse = new THREE.Vector3();
+                var transformControl = new THREE.TransformControls( camera, renderer.domElement );
+
+                function onDocumentMouseDown(event){
+                    //getting the mouse coordinates
+                    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+                    //this is converting 2d coordinates to 3d space
+                    raycaster.setFromCamera(mouse, camera);
+
+                    var intersectCube = raycaster.intersectObjects([cube]);
+                        if (intersectCube.length > 0) {
+                            transformControl.addEventListener( 'change', render);
+                            transformControl.setMode("translate");
+                            transformControl.attach(cube);
+                            scene.add(transformControl);
+
+                            transformControl.addEventListener('mouseDown', function(){
+                                orbitControl.enabled = false;
+                            })
+                        }
+                        else if (intersectCube == false){
+                            transformControl.addEventListener('mouseUp', function(){
+                                orbitControl.enabled = true;
+                                scene.remove(transformControl);
+                            })
+                        }
+                };
+
+            };
+
+            function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function render() {
+                requestAnimationFrame(render);
+                renderer.render(scene, camera);
+            }
+
+
+
+            </script>
+
+        </body>
+
+    </html>
