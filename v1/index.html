@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Walls with interactive Cube</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+        <script type="text/javascript" src="https://threejs.org/build/three.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/loaders/VRMLLoader.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+        <script type="text/javascript" src="https://threejs.org/examples/js/controls/TransformControls.js"></script>
+
+        <style>
+
+            body {
+                color: #fff;
+                font-family: 'Raleway', sans-serif;
+                font-weight: bold;
+                height:100%;
+                width:100%;
+                background-color: black;
+                margin:0;
+                overflow:hidden;
+
+            }
+
+            #container{
+                background-color: #5D6D7E;
+            }
+
+            .content {
+                position: absolute;
+                background-color: #424949;
+                margin:10px;
+                padding:20px;
+                top:40%;
+                left:25px;
+            }
+            #material1{
+                text-transform: uppercase;
+                font-family: 'Raleway';
+                font-weight:400;
+                font-size:medium;
+                margin:20px;
+            }
+
+            #material2{
+                text-transform: uppercase;
+                font-family: 'Raleway';
+                font-weight:400;
+                font-size:medium;
+                margin:20px;
+            }
+
+            #material3{
+                text-transform: uppercase;
+                font-family: 'Raleway';
+                font-weight:400;
+                font-size:medium;
+                margin:20px;
+
+            }
+
+            #material1:hover{
+                background-color: #9dc2c2;
+                color:black;
+                margin:20px;
+                padding:10px;
+                cursor:pointer;
+                font-size:medium;
+                font-weight:800;
+                transition: 0.5s;
+            }
+
+            #material2:hover{
+                background-color: #9dc2c2;
+                color:black;
+                margin:20px;
+                padding:10px;
+                cursor:pointer;
+                font-size:medium;
+                font-weight:800;
+                transition: 0.5s;
+            }
+
+            #material3:hover{
+                background-color: #9dc2c2;
+                color:black;
+                margin:20px;
+                padding:10px;
+                cursor:pointer;
+                font-size:medium;
+                font-weight:800;
+                transition: 0.5s;
+            }
+
+
+        </style>
+    </head>
+
+    <body>
+        <div id = "container">
+            <section class = "content">
+                <h2 id = "material1">Material 1</h2>
+                <h2 id = "material2">Material 2</h2>
+                <h2 id = "material3">Material 3</h2>
+            </section>
+        </div>
+
+        <script>
+            var renderer, scene, camera, composer, planet3D, shell3Dt, particle;
+            var wallGeometry, colorMaterial;
+
+            init();
+            render();
+
+            function init() {
+                //renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                renderer.setClearColor(0x000000, 0.0);
+                var container = document.getElementById("container");
+                    container.appendChild(renderer.domElement);
+
+                //DOM
+                var content = document.getElementById("content");
+                var mat1 = document.getElementById("material1");
+                var mat2 = document.getElementById("material2");
+                var mat3 = document.getElementById("material3");
+
+                scene = new THREE.Scene();
+
+                var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+                scene.add( light );
+
+                //camera
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100000);
+                camera.position.set(-4000,10000,15000);
+
+                //orbit controls
+                var orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
+                    orbitControl.update();
+
+                // Add listener for window resize.
+                window.addEventListener('resize', onWindowResize, false);
+                document.addEventListener('click', onDocumentMouseDown, false);
+
+                //creating wall
+                let wallGeometry;
+                // Create wall material
+                var wallMaterial1 = new THREE.MeshBasicMaterial({
+                    color: 0xe5e5e5
+                });
+
+                function createWall([length, width, height], [positionX,positionY,positionZ], rotation){
+                    let plane = new THREE.BoxBufferGeometry(length, width, height);
+                    wallGeometry = new THREE.Mesh(plane, wallMaterial1);
+                    wallGeometry.position.set(positionX, positionY, positionZ);
+                    wallGeometry.rotation.y = rotation;
+                    scene.add(wallGeometry);
+                }
+
+                //creating wall A
+                createWall([2145, 3000, 10], [0,0,0], 0);
+
+                //creating wall G
+                createWall([3040, 3000, 10], [-1072,0,1500], Math.PI/2 );
+
+                //creating wall H
+                createWall([2344, 3000, 10], [-2244,0,3000], 0 );
+
+                // wallC
+                createWall([3040, 3000, 10], [-3416.5,0,1500], Math.PI/2 );
+
+                // wallB
+                createWall([2145, 3000, 10], [-4489,0,0], 0 );
+
+                // wallD
+                createWall([5980, 3000, 10], [-5561,0,2990], Math.PI/2 );
+
+                // wallE
+                createWall([6634, 3000, 10], [-2244,0,5980], 0 );
+
+                // wallF
+                createWall([5980, 3000, 10], [1072,0,2990], Math.PI/2 );
+
+                //creating cube
+                let boxGeometry;
+                //cube materials
+                var meshMaterial =new THREE.MeshPhongMaterial( {
+                                    color: 0xffffff,
+                                    specular: 0x009900,
+                                    shininess: 30
+                                });
+
+                var meshMaterial1 =new THREE.MeshPhongMaterial( {
+                                    color: 0xff0000,
+                                    specular: 0x009900,
+                                    shininess: 30
+                                });
+
+                var meshMaterial2 =new THREE.MeshPhongMaterial( {
+                                    color: 0xffff00,
+                                    specular: 0x009900,
+                                    shininess: 30
+                                });
+
+                var meshMaterial3 =new THREE.MeshPhongMaterial( {
+                                    color: 0xff00ff,
+                                    specular: 0x009900,
+                                    shininess: 30
+                                });
+
+                function createCube([length, width, height], [positionX,positionY,positionZ]){
+                    let cube = new THREE.BoxBufferGeometry(length, width, height);
+                    boxGeometry = new THREE.Mesh(cube,meshMaterial);
+                    // mesh = boxGeometry;
+                    boxGeometry.position.set(positionX, positionY, positionZ);
+                    scene.add(boxGeometry);
+                }
+
+                    createCube([800,800,800], [0,0,1500]);
+
+                //changing color functions
+                mat1.onclick = function meshMat1(){
+                                boxGeometry.material = meshMaterial1;
+                                }
+
+                mat2.onclick = function meshMat2(){
+                                boxGeometry.material = meshMaterial2;
+                                }
+
+                mat3.onclick = function meshMat3(){
+                                boxGeometry.material = meshMaterial3;
+                                }
+
+
+                //adding interactivity
+                var raycaster = new THREE.Raycaster();
+                var mouse = new THREE.Vector3();
+                var transformControl = new THREE.TransformControls( camera, renderer.domElement );
+                let intersectCube = raycaster.intersectObjects(boxGeometry);
+
+                function onDocumentMouseDown(event){
+                    //getting the mouse coordinates
+                    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+                    //this is converting 2d coordinates to 3d space
+                    raycaster.setFromCamera(mouse, camera);
+
+                    var intersectCube = raycaster.intersectObjects([boxGeometry]);
+                        if (intersectCube.length > 0) {
+                            transformControl.addEventListener( 'change', render);
+                            transformControl.setMode("translate");
+                            transformControl.attach(boxGeometry);
+                            scene.add(transformControl);
+
+                            transformControl.addEventListener('mouseDown', function(){
+                                orbitControl.enabled = false;
+                            })
+                        }
+                        else if (intersectCube == false){
+                            transformControl.addEventListener('mouseUp', function(){
+                                orbitControl.enabled = true;
+                                scene.remove(transformControl);
+                            })
+                        }
+
+                    onDocumentMouseDown();
+
+                };
+
+            };
+
+            function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            function render() {
+                requestAnimationFrame(render);
+                renderer.render(scene, camera);
+            }
+
+            </script>
+
+        </body>
+
+    </html>
