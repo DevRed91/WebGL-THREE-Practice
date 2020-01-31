@@ -64,10 +64,10 @@
 
             //DOM
             let container = document.getElementById("container");
-            var content = document.getElementById("content");
-            var sphereText = document.getElementById("sphereGeometry");
+            let content = document.getElementById("content");
+            let sphereText = document.getElementById("sphereGeometry");
                 sphereText.style.display = "none";
-            var cubeText = document.getElementById("boxGeometry");
+                let cubeText = document.getElementById("boxGeometry");
                 cubeText.style.display = "none";
 
             //renderer
@@ -90,7 +90,7 @@
             function init() {
 
                 scene = new THREE.Scene();
-                var light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
+                let light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
                 scene.add( light );
 
                 //camera
@@ -98,11 +98,11 @@
                 camera.position.set(-4000,10000,15000);
 
                 //orbit controls
-                var orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
+                let orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
                     orbitControl.update();
 
                 // Create wall material
-                var wallMaterial1 = new THREE.MeshPhongMaterial( {
+                let wallMaterial1 = new THREE.MeshPhongMaterial( {
                                     color: 0xffffff,
                                     specular: 0x009900,
                                     shininess: 30
@@ -141,25 +141,25 @@
                 createWall([5980, 3000, 10], [1072,0,2990], Math.PI/2 );
 
                 //mesh materials
-                var meshMaterial =new THREE.MeshPhongMaterial( {
+                let meshMaterial =new THREE.MeshPhongMaterial( {
                                     color: 0xffffff,
                                     specular: 0x009900,
                                     shininess: 30
                                 });
 
-                var meshMaterial1 =new THREE.MeshPhongMaterial( {
+                let meshMaterial1 =new THREE.MeshPhongMaterial( {
                                     color: 0xffffff,
                                     specular: 0x009900,
                                     shininess: 30
                                 });
 
-                var meshMaterial2 =new THREE.MeshPhongMaterial( {
+                let meshMaterial2 =new THREE.MeshPhongMaterial( {
                                     color: 0xffff00,
                                     specular: 0x009900,
                                     shininess: 30
                                 });
 
-                var meshMaterial3 =new THREE.MeshPhongMaterial( {
+                let meshMaterial3 =new THREE.MeshPhongMaterial( {
                                     color: 0xff00ff,
                                     specular: 0x009900,
                                     shininess: 30
@@ -258,7 +258,7 @@
                 meshes = [sphereGeometry,boxGeometry];
 
                 let intersects = rayCast.intersectObjects(meshes);
-                    for (var i = 0; i < intersects.length; i++) {
+                    for (let i = 0; i < intersects.length; i++) {
                         intersects[i].object.material.color.set(0xff0000);
                     }
 
