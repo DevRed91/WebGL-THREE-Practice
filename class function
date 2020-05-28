@@ -1,0 +1,105 @@
+let scene, camera, composer, planet3D, shell3Dt, particle;
+            let rayCast, mouse,transformControl;
+
+            //DOM
+            let container = document.getElementById("container");
+            // let content = document.getElementById("content");
+            // let sphereText = document.getElementById("sphereGeometry");
+            //     sphereText.style.display = "none";
+            //     let cubeText = document.getElementById("boxGeometry");
+            //     cubeText.style.display = "none";
+
+            //renderer
+            let renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+
+                renderer.setClearColor(0x000000, 0.0);
+
+                container.appendChild(renderer.domElement);
+
+            function init() {
+
+                scene = new THREE.Scene();
+                let light = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
+                scene.add( light );
+
+                //camera
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100000);
+                camera.position.set(-4000,10000,15000);
+
+                //orbit controls
+                let orbitControl = new THREE.OrbitControls( camera, renderer.domElement );
+                    orbitControl.update();
+
+                //create wall with class constructor
+                class CreateObject{
+                    constructor ([length, width, height], [positionX,positionY,positionZ], [rotationX, rotationZ, rotationY]){
+                        this.l = length;
+                        this.w = width;
+                        this.h = height;
+                    
+                        this.pX = positionX;
+                        this.pY = positionY;
+                        this.pZ = positionZ;
+
+                        this.rX = rotationX;
+                        this.rZ = rotationZ;
+                        this.rY = rotationY;
+                    }
+
+                    make(_color, _specular, _shine){
+                        let wall = new THREE.BoxBufferGeometry(this.l, this.w, this.h);
+                        let mat = new THREE.MeshPhongMaterial( {
+                                        color: _color,
+                                        specular: _specular,
+                                        shininess: _shine
+                                    });
+                        let geometry = new THREE.Mesh(wall, mat);
+
+                        geometry.position.set(this.pX, this.pY, this.pZ);
+
+                        geometry.rotation.x = this.rX;
+                        geometry.rotation.z = this.rZ;
+                        geometry.rotation.y = this.rY;
+                        
+                        scene.add(geometry);
+                    }
+                    
+                }
+                //wall
+                let wall1 = new CreateObject([2145, 3000, 10], [0,1500,0], [0, 0, 0]);
+                wall1.make(0xffffff, 0x009900, 30);
+
+                //floor
+                let floor = new CreateObject([2145, 3000, 10], [0,0,1500], [Math.PI/2, 0, 0]);
+                floor.make(0xffffff, 0x009900, 30);
+
+                //create kitchen unit
+                let baseUnit = new CreateObject([900,800,560], [0,450,1500], [0, Math.PI, 0]);
+                baseUnit.make(0xff00ff, 0x009900, 30);
+
+                let onDocumentMouseDown = function (event){
+                    mouse.x = (event.clientX / window.innerWidth) * 2 -1;
+                    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                    mouse.z = 1;
+
+                    rayCast.setFromCamera(mouse,camera);
+                };
+
+                document.addEventListener('click', onDocumentMouseDown, false);
+
+            };
+
+            let render = function() {
+                renderer.render(scene, camera);
+                requestAnimationFrame(render);
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            init();
+            render();
