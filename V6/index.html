@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Walls with interactive Cube</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+        <style>
+
+            body {
+                color: #fff;
+                font-family: 'Raleway', sans-serif;
+                font-weight: bold;
+                height:100%;
+                width:100%;
+                margin:0;
+                overflow:hidden; 
+            }
+            #container{
+                background-color: rgb(97, 100, 102);
+            }
+
+            .content {
+                position: absolute;
+                background-color:transparent;
+                margin:10px;
+                padding:20px;
+                top:40%;
+                left:25px;
+            }
+
+            #sphereGeometry{
+                font-family:Raleway;
+                font-weight:600;
+                color:orange;
+            }
+            #boxGeometry{
+                font-family:Raleway;
+                font-weight:600;
+                color:orange;
+
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <div id = "container">
+        </div>
+
+        <script type = 'module'>
+            import * as THREE from './three/build/three.module.js'
+            import {OrbitControls} from './three/examples/jsm/controls/OrbitControls.js';
+            import { RectAreaLightUniformsLib } from './three/examples/jsm/lights/RectAreaLightUniformsLib.js';
+
+            let scene, camera, composer, planet3D, shell3Dt, particle;
+            let raycaster, mouse,transformControl, renderer;
+
+            let rollOverMaterial, rollOverMesh,rollOverGeo, cubeMaterial, cubeGeo;
+
+            let objects = [];
+
+            let isShiftDown = false;
+            
+            let wallGroup, floorGroup, ceilingGroup;
+
+            let normal;
+
+            //DOM
+            let container = document.getElementById("container");
+
+            function init() {
+
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xf0f0f0);
+                
+                let amblight = new THREE.AmbientLight( 0x404040 );
+                scene.add(amblight);
+
+                //camera
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100000);
+                camera.position.set(-4000,10000,15000);
+                camera.lookAt(0, 0, 0);
+
+                //renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMapSoft = true;
+                renderer.shadowMap.type = THREE.PCFShadowMap;
+                renderer.outputEncoding = THREE.sRGBEncoding;
+                renderer.setClearColor(0x000000, 0.0);
+
+                let controls = new OrbitControls( camera, renderer.domElement );
+                controls.update();
+
+                document.body.appendChild(renderer.domElement);
+
+                //create wall with class constructor
+                class CreateWall{
+                    constructor ([length, width, height], [positionX,positionY,positionZ], rotation){
+                        this.l = length;
+                        this.w = width;
+                        this.h = height;
+                    
+                        this.pX = positionX;
+                        this.pY = positionY;
+                        this.pZ = positionZ;
+
+                        this.r = rotation;
+                    }
+
+                    wallMat(_color, _specular, _shine){
+                        let wall = new THREE.PlaneBufferGeometry(this.l, this.w, this.h);
+                        let mat = new THREE.MeshPhongMaterial( {
+                                        color: _color,
+                                        specular: _specular,
+                                        shininess: _shine,
+                                        side: THREE.FrontSide
+                                    });
+                        let wallGeometry = new THREE.Mesh(wall, mat);
+
+                        wallGeometry.position.set(this.pX, this.pY, this.pZ);
+                        wallGeometry.rotation.y = this.r;
+                        wallGeometry.castShadow = true;
+                        wallGeometry.recieveShadow = true;
+                        
+                        wallGroup = new THREE.Group();
+                        wallGroup.add(wallGeometry);
+                        scene.add(wallGroup);
+                    }
+                    
+                }
+                // create walls
+                let wall1 = new CreateWall([2145, 3000, 10], [2244.5,1500,-2990], 0);
+                wall1.wallMat(0xffffff, 0x009900, 30);
+
+                let wall2 = new CreateWall([3040, 3000, 10], [1172,1500,-1500], Math.PI/2);
+                wall2.wallMat(0xffffff, 0x009900, 30);
+
+                let wall3 = new CreateWall([2344, 3000, 10], [0,1500,30], 0);
+                wall3.wallMat(0xffffff, 0x009900, 30);
+
+                let wall4 = new CreateWall([3040, 3000, 10], [-1172,1500,-1500], -Math.PI/2);
+                wall4.wallMat(0xffffff, 0x990000, 30);
+
+                let wall5 = new CreateWall([2145, 3000, 10], [-2244.5,1500,-2990], 0);
+                wall5.wallMat(0xffffff, 0x990000, 30);
+
+                let wall6 = new CreateWall([5980, 3000, 10], [-3317,1500,0], Math.PI/2);
+                wall6.wallMat(0xffffff, 0x990000, 30);
+
+                let wall7 = new CreateWall([6634, 3000, 10], [0,1500,2990], -Math.PI);
+                wall7.wallMat(0xffffff, 0x990000, 30);
+
+                let wall8 = new CreateWall([5980, 3000, 10], [3317,1500,0], -Math.PI/2);
+                wall8.wallMat(0xffffff, 0x990000, 30);
+
+                //grid
+                // let gridHelper = new THREE.GridHelper(10000, 20);
+                // scene.add(gridHelper);
+
+                //floor group
+                floorGroup = new THREE.Group();
+                scene.add(floorGroup);
+                
+                let floorShape = new THREE.Shape();
+                floorShape.moveTo( 1072.5, 0);
+                floorShape.lineTo( -1072.5, 0 );
+                floorShape.lineTo( -1072.5, -3040 );
+                floorShape.lineTo( -3416, -3040 );
+                floorShape.lineTo( -3416, 0 );
+                floorShape.lineTo( -5563.5, 0 );
+                floorShape.lineTo( -5563.5, -5980 );
+                floorShape.lineTo( 1072.5, -5980 );
+                floorShape.lineTo( 1072.5, 0 );
+
+                let floorGeom = new THREE.ShapeBufferGeometry( floorShape);
+                floorGeom.rotateX( -Math.PI/2 );
+                let floor = new THREE.Mesh( floorGeom, new THREE.MeshStandardMaterial({color: 0xe5e5e5, metalness:0.4, side : THREE.FrontSide}) );
+                floor.position.set(2244.5, 0, -2990);
+                floor.receiveShadow = true;
+                floor.castShadow = true;
+                floorGroup.add(floor);
+
+                let ceilingGeom = floorGeom.clone();
+                // ceilingGeom.rotateX(-Math.PI/2);
+                // ceilingGeom.rotateZ(Math.PI);
+                let ceiling = new THREE.Mesh(ceilingGeom, new THREE.MeshStandardMaterial({color: 0xe5e5e5, side : THREE.BackSide}));
+                ceiling.position.set(2244.5, 3000, -2990);
+
+                // // ceiling group
+                ceilingGroup = new THREE.Group();
+                // ceilingGroup.position.set(-4489, 3000, 0)
+                scene.add(ceilingGroup);
+                ceilingGroup.add(ceiling);
+
+                //rect light inittialisation
+                RectAreaLightUniformsLib.init();
+                //adding light function
+                function RectangularLight(hexColor,positionX, positionY, positionZ){
+                    let Light = new THREE.RectAreaLight( hexColor, 60 ,600, 600);
+                        Light.position.set(positionX, positionY, positionZ);
+                        Light.rotateX( -Math.PI/2 );
+                        scene.add(Light);
+
+                        let LightMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(), new THREE.MeshBasicMaterial( { side: THREE.BackSide } ));
+                        LightMesh.scale.x = Light.width;
+                        LightMesh.scale.y = Light.height;
+                        
+                        Light.add( LightMesh );
+
+                        ceilingGroup.add(Light);
+                }
+                //light1
+                RectangularLight(0xffffff,-2244.5, 2990, 1470);
+                //light2
+                RectangularLight(0xffffff,2244.5, 2990, 1470);
+                //light3
+                RectangularLight(0xffffff,2244.5, 2990, -1520);
+                //light4
+                RectangularLight(0xffffff,-2244.5, 2990, -1520);
+
+                //adding interactivity
+                raycaster = new THREE.Raycaster();
+                mouse = new THREE.Vector2();
+                // transformControl = new THREE.TransformControls(camera, renderer.domElement);
+
+                // document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				// document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				// document.addEventListener( 'keydown', onDocumentKeyDown, false );
+                // document.addEventListener( 'keyup', onDocumentKeyUp, false );
+                document.addEventListener( 'mousemove', onCameraMove, false );
+				window.addEventListener( 'resize', onWindowResize, false );
+            };
+
+            function onWindowResize() {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+                }
+
+            let onCameraMove = (event) => {
+                event.preventDefault();
+                
+                mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 );
+                raycaster.setFromCamera( mouse, camera );
+
+                let intersects = raycaster.intersectObjects( wallGroup);
+
+                for(let i = 0; i < intersects.length; i++){
+                    intersects[i].object.material.color.set(0xff0000);
+                }
+
+                render();
+            }
+        
+            function render() {
+
+                renderer.render( scene, camera );
+                requestAnimationFrame(render);
+            }
+
+            init();
+            render();
+
+            </script>
+
+        </body>
+
+    </html>
