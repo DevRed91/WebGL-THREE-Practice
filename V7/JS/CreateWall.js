@@ -36,10 +36,7 @@ export class CreateWall extends THREE.Object3D{
         
     }
 
-
-
-
-    }
+ }
 
 
 
