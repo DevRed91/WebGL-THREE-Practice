@@ -1,10 +1,10 @@
-import * as THREE from './three/build/three.module.js'
-import {OrbitControls} from './three/examples/jsm/controls/OrbitControls.js';
-import { RectAreaLightUniformsLib } from './three/examples/jsm/lights/RectAreaLightUniformsLib.js';
-import {CreateWall} from './JS/CreateWall.js';
+import * as THREE from '../three/build/three.module.js'
+import {OrbitControls} from '../three/examples/jsm/controls/OrbitControls.js';
+import { RectAreaLightUniformsLib } from '../three/examples/jsm/lights/RectAreaLightUniformsLib.js';
+import {CreateWall} from './CreateWall.js';
 
     let scene, camera;
-    let renderer;
+    let renderer, raycaster;
 
     let group;
 
@@ -17,9 +17,9 @@ import {CreateWall} from './JS/CreateWall.js';
         let amblight = new THREE.AmbientLight( 0x404040 );
         scene.add(amblight);
 
-        let heimLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 0.5);
-        heimLight.position.set( 0, 500, 500 );
-        scene.add( heimLight );
+        let hemiLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 0.5);
+        hemiLight.position.set( 0, 500, 500 );
+        scene.add( hemiLight );
 
         //camera
         camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
@@ -50,30 +50,40 @@ import {CreateWall} from './JS/CreateWall.js';
         group = new THREE.Group();
         scene.add(group);
 
+        let wallGroup = new THREE.Group();
+
         // create walls
         let wall1 = new CreateWall([214.5, 300, 1], [224.4,150,-299], 0);
         wall1.wallMat(0xffffff, 0x009900, 30);
+        scene.add(wall1);
 
         let wall2 = new CreateWall([304, 300, 1], [117.2,150,-150], Math.PI/2);
         wall2.wallMat(0xffffff, 0x009900, 30);
+        scene.add(wall2);
 
         let wall3 = new CreateWall([234.4, 300, 1], [0,150,2.5], 0);
         wall3.wallMat(0xffffff, 0x009900, 30);
+        scene.add(wall3);
 
         let wall4 = new CreateWall([304, 300, 1], [-117.2,150,-150], -Math.PI/2);
         wall4.wallMat(0xffffff, 0x990000, 30);
+        scene.add(wall4);
 
         let wall5 = new CreateWall([214.5, 300, 1], [-224.4,150,-299], 0);
         wall5.wallMat(0xffffff, 0x990000, 30);
+        scene.add(wall5);
 
         let wall6 = new CreateWall([598, 300, 1], [-331.7,150,0], Math.PI/2);
         wall6.wallMat(0xffffff, 0x990000, 30);
+        scene.add(wall6);
 
         let wall7 = new CreateWall([663.4, 300, 1], [0,150,299], -Math.PI);
         wall7.wallMat(0xffffff, 0x990000, 30);
+        scene.add(wall7);
 
         let wall8 = new CreateWall([598, 300, 1], [331.7,150,0], -Math.PI/2);
         wall8.wallMat(0xffffff, 0x990000, 30);
+        scene.add(wall8);
 
         //adding cornice
         function addFloor(shape, color, side, x, y, z, rx, ry, rz, s){
@@ -166,11 +176,12 @@ import {CreateWall} from './JS/CreateWall.js';
         RectangularLight(0xffffff,-224.4, 299, -152);
 
 
-        //adding interactivity
-        raycaster = new THREE.Raycaster();
-        mouse = new THREE.Vector2();
-        // transformControl = new THREE.TransformControls(camera, renderer.domElement);
-        
+        // document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        // document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+        // document.addEventListener( 'keydown', onDocumentKeyDown, false );
+        // document.addEventListener( 'keyup', onDocumentKeyUp, false );
+        // document.addEventListener( 'mousemove', onCameraMove, false );
+        // document.querySelector('#showCornice').onclick = showCornice;
         window.addEventListener( 'resize', onWindowResize, false );
     };
 
