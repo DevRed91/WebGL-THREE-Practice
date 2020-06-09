@@ -97,7 +97,6 @@ import {CreateWall} from './CreateWall.js';
         let wallGroup = new THREE.Group();
         wallGroup.add(wallGrpElements);
 
-        //adding cornice
         function addFloor(shape, color, side, x, y, z, rx, ry, rz, s){
             let  geometry = new THREE.ShapeBufferGeometry( shape );
             
