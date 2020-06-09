@@ -50,8 +50,6 @@ import {CreateWall} from './CreateWall.js';
         group = new THREE.Group();
         scene.add(group);
 
-        let wallGroup = new THREE.Group();
-
         let wallMaterial = new THREE.MeshPhongMaterial( {
                         color: 0xffffff,
                         specular: 0x009900,
@@ -92,6 +90,13 @@ import {CreateWall} from './CreateWall.js';
         let wall8 = new CreateWall(wallGeo8, wallMaterial, [331.7,150,0], -Math.PI/2);
         scene.add(wall8);
         
+        //wall group
+        let wallGrpElements = []
+        wallGrpElements.push([wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8]);
+
+        let wallGroup = new THREE.Group();
+        wallGroup.add(wallGrpElements);
+
         //adding cornice
         function addFloor(shape, color, side, x, y, z, rx, ry, rz, s){
             let  geometry = new THREE.ShapeBufferGeometry( shape );
