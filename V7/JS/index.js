@@ -52,39 +52,46 @@ import {CreateWall} from './CreateWall.js';
 
         let wallGroup = new THREE.Group();
 
-        // create walls
-        let wall1 = new CreateWall([214.5, 300, 1], [224.4,150,-299], 0);
-        wall1.wallMat(0xffffff, 0x009900, 30);
+        let wallMaterial = new THREE.MeshPhongMaterial( {
+                        color: 0xffffff,
+                        specular: 0x009900,
+                        shininess: 30,
+                        side: THREE.FrontSide
+                    });
+        
+        // walls
+        let wallGeo1 = new THREE.PlaneBufferGeometry(214.5, 300, 1);
+        let wall1 = new CreateWall(wallGeo1, wallMaterial, [224.4,150,-299], 0);
         scene.add(wall1);
 
-        let wall2 = new CreateWall([304, 300, 1], [117.2,150,-150], Math.PI/2);
-        wall2.wallMat(0xffffff, 0x009900, 30);
+        let wallGeo2 = new THREE.PlaneBufferGeometry(304, 300, 1);
+        let wall2 = new CreateWall(wallGeo2, wallMaterial, [117.2,150,-150], Math.PI/2);
         scene.add(wall2);
 
-        let wall3 = new CreateWall([234.4, 300, 1], [0,150,2.5], 0);
-        wall3.wallMat(0xffffff, 0x009900, 30);
+        let wallGeo3 = new THREE.PlaneBufferGeometry(234.4, 300, 1);
+        let wall3 = new CreateWall(wallGeo3, wallMaterial, [0,150,2.5], 0);
         scene.add(wall3);
 
-        let wall4 = new CreateWall([304, 300, 1], [-117.2,150,-150], -Math.PI/2);
-        wall4.wallMat(0xffffff, 0x990000, 30);
+        let wallGeo4 = new THREE.PlaneBufferGeometry(304, 300, 1);
+        let wall4 = new CreateWall(wallGeo4, wallMaterial, [-117.2,150,-150], -Math.PI/2);
         scene.add(wall4);
 
-        let wall5 = new CreateWall([214.5, 300, 1], [-224.4,150,-299], 0);
-        wall5.wallMat(0xffffff, 0x990000, 30);
+        let wallGeo5 = new THREE.PlaneBufferGeometry(214.5, 300, 1);
+        let wall5 = new CreateWall(wallGeo5, wallMaterial, [-224.4,150,-299], 0);
         scene.add(wall5);
 
-        let wall6 = new CreateWall([598, 300, 1], [-331.7,150,0], Math.PI/2);
-        wall6.wallMat(0xffffff, 0x990000, 30);
+        let wallGeo6 = new THREE.PlaneBufferGeometry(598, 300, 1);
+        let wall6 = new CreateWall(wallGeo6, wallMaterial, [-331.7,150,0], Math.PI/2);
         scene.add(wall6);
 
-        let wall7 = new CreateWall([663.4, 300, 1], [0,150,299], -Math.PI);
-        wall7.wallMat(0xffffff, 0x990000, 30);
+        let wallGeo7 = new THREE.PlaneBufferGeometry(663.4, 300, 1);
+        let wall7 = new CreateWall(wallGeo7, wallMaterial, [0,150,299], -Math.PI);
         scene.add(wall7);
 
-        let wall8 = new CreateWall([598, 300, 1], [331.7,150,0], -Math.PI/2);
-        wall8.wallMat(0xffffff, 0x990000, 30);
+        let wallGeo8 = new THREE.PlaneBufferGeometry(598, 300, 1);
+        let wall8 = new CreateWall(wallGeo8, wallMaterial, [331.7,150,0], -Math.PI/2);
         scene.add(wall8);
-
+        
         //adding cornice
         function addFloor(shape, color, side, x, y, z, rx, ry, rz, s){
             let  geometry = new THREE.ShapeBufferGeometry( shape );
@@ -102,7 +109,6 @@ import {CreateWall} from './CreateWall.js';
             let extrudeSettings = { depth: depth, bevelEnabled: false};
 
             let geometry = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
-
             let mesh = new THREE.Mesh( geometry, new THREE.MeshStandardMaterial( { color: color} ) );
             mesh.position.set( x, y, z);
             mesh.rotation.set( rx, ry, rz );
