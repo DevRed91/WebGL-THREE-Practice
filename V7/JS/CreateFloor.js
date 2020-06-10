@@ -1,10 +1,11 @@
-class CreateFloor{
-    constructor (geomtery, material, [positionX,positionY,positionZ], [rotationX, rotationY, rotationZ]){
+class CreateCornice{
+    constructor (shape, [color, side],[positionX,positionY,positionZ], rotation){
+        let geometry = new THREE.ShapeBufferGeometry( shape );
+        let material = new THREE.MeshStandardMaterial({ color: color, metalness:0.4, side : side})
 
-        let mesh = new THREE.Mesh(geomtery, material);
-        mesh.position.set(positionX, positionY, positionZ);
-        mesh.rotation.set( rotationX, rotationY, rotationZ );
-        // mesh.scale.set( this.s, this.s, this.s);
+        let mesh = new THREE.Mesh(geometry, material);
+        mesh.position.set(positionX,positionY,positionZ);
+        mesh.rotation.y = rotation;
         mesh.castShadow = true;
         mesh.recieveShadow = true;
 
@@ -13,7 +14,11 @@ class CreateFloor{
 
 }
 
-export{CreateFloor};
+export{CreateCornice};
+
+
+
+
 
 
 
