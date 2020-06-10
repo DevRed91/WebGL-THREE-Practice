@@ -75,28 +75,20 @@ import {CreateCornice} from './CreateCornice.js';
 
         // walls
         let wall1 = new CreateWall(wallDimensions[0], 0xffffff, [224.4,150,-299], 0);
-        scene.add(wall1);
 
         let wall2 = new CreateWall(wallDimensions[1], 0xffffff, [117.2,150,-150], Math.PI/2);
-        scene.add(wall2);
 
         let wall3 = new CreateWall(wallDimensions[2], 0xffffff, [0,150,2.5], 0);
-        scene.add(wall3);
-
-        let wall4 = new CreateWall(wallDimensions[3], 0xffffff, [-117.2,150,-150], -Math.PI/2);
-        scene.add(wall4);
+       
+        let wall4 = new CreateWall(wallDimensions[3], 0xffffff, [-117.2,150,-150], -Math.PI/2);        
 
         let wall5 = new CreateWall(wallDimensions[4], 0xffffff, [-224.4,150,-299], 0);
-        scene.add(wall5);
-
+        
         let wall6 = new CreateWall(wallDimensions[5], 0xffffff, [-331.7,150,0], Math.PI/2);
-        scene.add(wall6);
-
+       
         let wall7 = new CreateWall(wallDimensions[6], 0xffffff, [0,150,299], -Math.PI);
-        scene.add(wall7);
-
+        
         let wall8 = new CreateWall(wallDimensions[7], 0xffffff, [331.7,150,0], -Math.PI/2);
-        scene.add(wall8);
 
         //wall group
         let wallGrpElements = []
@@ -104,6 +96,7 @@ import {CreateCornice} from './CreateCornice.js';
 
         let wallGroup = new THREE.Group();
         wallGroup.add(wallGrpElements);
+        scene.add(wallGroup);
 
         let cornice = new THREE.Shape();
         cornice.moveTo( 0, 0 );
