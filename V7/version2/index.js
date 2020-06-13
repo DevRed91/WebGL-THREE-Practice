@@ -165,12 +165,6 @@ import {CreateCornice} from './CreateCornice.js';
             for (let i = 1; i < array.length; i++){
                 shape.lineTo(array[i].x, array[i].y);
             }
-            // shape.moveTo(0,0);
-            // shape.lineTo(100,0);
-            // shape.lineTo(100, 100);
-            // shape.lineTo(0,100);
-            // shape.lineTo(0,0);
-
             console.log(array);
             // return shape;
             let geometry = new THREE.ShapeBufferGeometry( shape );
