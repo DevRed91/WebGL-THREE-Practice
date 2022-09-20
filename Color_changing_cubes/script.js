@@ -101,12 +101,6 @@ function init(){
     }
     
 }
-function load_room(){
-    load_model(BATHTUB_PATH, BATH_TEXTURE,{sx:10, sy:10, sz:10}, {x : -40, z : 20});
-    load_model(VANITY_PATH, VANITY_TEXTURE,{sx:10, sy:10, sz:10}, {x : 0, z : -20});
-    load_model(CHAIR_PATH, CHAIR_TEXTURE,{sx:12, sy:12, sz:12}, {x : 0, z : 35});
-    load_model(CHAIR_PATH, CHAIR_TEXTURE,{sx:12, sy:12, sz:12}, {x : 10, z : 35});
-}
 
 function orbitControls(camera, renderer){
     controls = new OrbitControls(camera, renderer.domElement);
@@ -117,16 +111,6 @@ function orbitControls(camera, renderer){
     controls.dampingFactor = 1.0;
 }
 
-function ground(size, texture){
-    let {x, y} = size;
-    let floorGeometry = new THREE.PlaneGeometry(size.x, size.y, 1, 1);
-    let floor = new THREE.Mesh(floorGeometry, texture);
-    floor.name = 'ground';
-    floor.rotation.x = -0.5 * Math.PI;
-    floor.receiveShadow = true;
-    floor.position.set(0,-5, 10);
-    scene.add(floor);
-}
 
 function lights(){
     const ambient = new THREE.AmbientLight(0xffffff, 0.5);
@@ -145,51 +129,7 @@ function lights(){
     scene.add(ambient);
     
 }
-function load_model(model_path, texture, scale, position){
-    let {x, z} = position;
-    let {sx, sy, sz} = scale;
-    loader.load(model_path, function (gltf) {
-        let model = gltf.scene;
-        model.scale.set(scale.sx, scale.sy, scale.sz);
-        model.position.set(x,-5, z);
-        model.traverse((child) => {
-            for(let i = 0; i < texture.length; i++){
-                if(child.name === texture[i].type){
-                    let material = child.material;
-                    material.color.set(texture[i].color);
-                }
-            }
-        })
-        scene.add(model);
-    })
 
-}
-
-function buildColors(colors) {
-    for (let [i, color] of colors.entries()) {
-      let swatch = document.createElement('div');
-      swatch.classList.add('tray__swatch');
-      swatch.style.background = "#" + color.color;
-      swatch.setAttribute('data-key', i);
-      TRAY.append(swatch);
-    }
-    let swatchesColor = document.querySelectorAll('.tray__swatch');
-    for(const swatchColor of swatchesColor){
-        swatchColor.addEventListener('click', selectColor)
-    }
-  }
-function selectColor(e){
-    let color = colorsSwatches[parseInt(e.target.dataset.key)];
-    console.log("Color key :", parseInt("0x" + color.color));
-    let material = new THREE.MeshStandardMaterial({
-        color: parseInt("0x" + color.color)
-    })
-    return material;
-}
-function setMaterial(object, color){
-    object.material.color.setHex(color);
-    scene.add(object);
-}
 
 function setOrbitControlsLimits(){
     controls.enableDamping = true
