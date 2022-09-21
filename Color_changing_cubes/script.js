@@ -33,10 +33,14 @@ let wooden_Material = new THREE.MeshStandardMaterial({
     map: wooden_Texture
   });
 
+let scaleX = document.getElementById( "scale_X" ).value;
+let scaleY = document.getElementById( "scale_Y" ).value;
+let scaleZ = document.getElementById( "scale_Z" ).value;
+
 let cubeSize = {
-    x: 20,
-    y: 20,
-    z: 20
+    x: scaleX,
+    y: scaleY,
+    z: scaleZ
 }
 
 const TRAY = document.getElementById('js-tray-slide');
@@ -93,11 +97,9 @@ function init(){
             cube.material = material;
         });
     }
-    let scaleX = document.getElementById( "scale_X" ).value / 100;
-    let scaleY = document.getElementById( "scale_Y" ).value / 100;
-    let scaleZ = document.getElementById( "scale_Z" ).value / 100;
     
-    cube.scale.set(scaleX,scaleY,scaleZ)
+    
+    // cube.scale.set(scaleX,scaleY,scaleZ)
     scene.add(cube);
 
     // let scaleX = document.getElementById("scale_X").value;
