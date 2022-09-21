@@ -8,6 +8,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {ShadowMapViewer} from 'three/examples/jsm/utils/ShadowMapViewer'
 import {BATH_TEXTURE, VANITY_TEXTURE, CHAIR_TEXTURE, colorsSwatches} from './textures';
+import {GLTFExporter} from 'three/examples/jsm/exporters/GLTFExporter.js'
 
 const dracoLoader = new DRACOLoader()
 const loader = new GLTFLoader()
@@ -74,19 +75,14 @@ function init(){
     lights();
     // load_room();
     renderLoop();
-    //build colors
-    for (let [i, color] of colorsSwatches.entries()) {
-        let swatch = document.createElement('div');
-        swatch.classList.add('tray__swatch');
-        swatch.style.background = "#" + color.color;
-        swatch.setAttribute('data-key', i);
-        TRAY.append(swatch);
-    }
+    buildColors(colorsSwatches);
+    
+    //Adding Meshes
+    let cube = cube_box(cubeSize, {px: 0, py: 0, pz: 0});
+    cube.name = "cube";
+
+    //Selection of swtaches
     let swatchesColor = document.querySelectorAll('.tray__swatch');
-    //Addition of meshes
-    let cube1 = cube_box(cubeSize, {px: 10, py: 0, pz: 20});
-    let cube2 = cube_box(cubeSize, {px: -10, py: 0, pz: -20});
-    // Selection of color swatches
     for(const swatchColor of swatchesColor){
         swatchColor.addEventListener('click', (e) => {
             let colorSelection = colorsSwatches[parseInt(e.target.dataset.key)];
@@ -94,12 +90,54 @@ function init(){
                 color: parseInt("0x" + colorSelection.color)
             });
             console.log("Color :", material);
-            cube1.material = material;
+            cube.material = material;
         });
-        scene.add(cube1);
-        scene.add(cube2);
     }
+    let scaleX = document.getElementById( "scale_X" ).value / 100;
+    let scaleY = document.getElementById( "scale_Y" ).value / 100;
+    let scaleZ = document.getElementById( "scale_Z" ).value / 100;
     
+    cube.scale.set(scaleX,scaleY,scaleZ)
+    scene.add(cube);
+
+    // let scaleX = document.getElementById("scale_X").value;
+    // cube.scale.x = scaleX.x;
+
+    export_gltf()
+
+}
+
+function export_gltf(){
+    let exportBtn = document.getElementById("export_butn");
+    exportBtn.addEventListener("click", () => {
+        console.log("export button is clicked");
+        // Instantiate a exporter
+        // const exporter = new GLTFExporter();
+
+        // // Parse the input and generate the glTF output
+        // exporter.parse(
+        //     scene,
+        //     // called when the gltf has been generated
+        //     function ( gltf ) {
+
+        //         console.log( gltf );
+        //         downloadJSON( gltf );
+
+        //     },
+        //     // called when there is an error in the generation
+        //     function ( error ) {
+
+        //         console.log( 'An error happened' );
+
+        //     },
+        // );
+    })
+}
+function load_room(){
+    load_model(BATHTUB_PATH, BATH_TEXTURE,{sx:10, sy:10, sz:10}, {x : -40, z : 20});
+    load_model(VANITY_PATH, VANITY_TEXTURE,{sx:10, sy:10, sz:10}, {x : 0, z : -20});
+    load_model(CHAIR_PATH, CHAIR_TEXTURE,{sx:12, sy:12, sz:12}, {x : 0, z : 35});
+    load_model(CHAIR_PATH, CHAIR_TEXTURE,{sx:12, sy:12, sz:12}, {x : 10, z : 35});
 }
 
 function orbitControls(camera, renderer){
@@ -111,6 +149,16 @@ function orbitControls(camera, renderer){
     controls.dampingFactor = 1.0;
 }
 
+function ground(size, texture){
+    let {x, y} = size;
+    let floorGeometry = new THREE.PlaneGeometry(size.x, size.y, 1, 1);
+    let floor = new THREE.Mesh(floorGeometry, texture);
+    floor.name = 'ground';
+    floor.rotation.x = -0.5 * Math.PI;
+    floor.receiveShadow = true;
+    floor.position.set(0,-5, 10);
+    scene.add(floor);
+}
 
 function lights(){
     const ambient = new THREE.AmbientLight(0xffffff, 0.5);
@@ -129,8 +177,35 @@ function lights(){
     scene.add(ambient);
     
 }
+function load_model(model_path, texture, scale, position){
+    let {x, z} = position;
+    let {sx, sy, sz} = scale;
+    loader.load(model_path, function (gltf) {
+        let model = gltf.scene;
+        model.scale.set(scale.sx, scale.sy, scale.sz);
+        model.position.set(x,-5, z);
+        model.traverse((child) => {
+            for(let i = 0; i < texture.length; i++){
+                if(child.name === texture[i].type){
+                    let material = child.material;
+                    material.color.set(texture[i].color);
+                }
+            }
+        })
+        scene.add(model);
+    })
 
+}
 
+function buildColors(colors) {
+    for (let [i, color] of colors.entries()) {
+      let swatch = document.createElement('div');
+      swatch.classList.add('tray__swatch');
+      swatch.style.background = "#" + color.color;
+      swatch.setAttribute('data-key', i);
+      TRAY.append(swatch);
+    }
+  }
 function setOrbitControlsLimits(){
     controls.enableDamping = true
     controls.dampingFactor = 0.5
@@ -160,7 +235,9 @@ function onPointerMove( event ) {
 
 function renderLoop() {
     // TWEEN.update() // update animations
-    controls.update() // update orbit controls
+    controls.update() 
+    
+    // update orbit controls
     renderer.render(scene, camera) // render the scene using the camera
     requestAnimationFrame(renderLoop) //loop the render function
     
